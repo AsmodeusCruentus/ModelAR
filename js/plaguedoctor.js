@@ -1,5 +1,5 @@
 function loadModel1() {
-    const container = document.getElementById('container_3');
+    const container = document.getElementById('container_5');
 
     // Scene
     const scene = new THREE.Scene();
@@ -41,16 +41,18 @@ function loadModel1() {
 
     // GLTFLoader 
     const loader = new THREE.GLTFLoader();
-    loader.load('models/raspberrypi4box.glb', function (gltf) { // test mode = raspberrypi4box.glb
+    loader.load('models/plaguedoctor.glb', function (gltf) { // test mode = raspberrypi4box.glb
         const model = gltf.scene;
 
         // GENTLEMEN! WE HAZ ACQUIRED ZEH AXIS CONTROL!
         // Rotate 90 degrees around X-axis -- in my case, this has it start facing the camera
         // importing the model into Blender or something similar to rotate it, doesn't seem to matter at all...
         // model.rotation.x = Math.PI / 1.9; 
-        model.position.y = 200; // Move it up a bit
-        model.scale.set(3, 3, 3); // Scale it up a bit
-        model.rotation.x = Math.PI / 2; // Rotate it 90 degrees around the x-axis
+        model.position.y = 400; // Move it up a bit
+        model.scale.set(0.8, 0.8, 0.8); // Scale it up a bit
+        model.rotation.x = 30; // Rotate it 90 degrees around the x-axis
+        model.rotation.y = 1000; // Rotate it 90 degrees around the x-axis
+        model.rotation.z = 0; // Rotate it 90 degrees around the x-axis
 
         // Enable reflections & shadows
         model.traverse((child) => {
@@ -59,9 +61,9 @@ function loadModel1() {
                 child.receiveShadow = true; // Enable receiving shadows
 
                 child.material = new THREE.MeshStandardMaterial({
-                    color: 0xff0000, // Dark gray
+                    color: 0xC4A484, // Dark gray
                     metalness: 0, // Increased metalness for reflection
-                    roughness: 0.0, // Less roughness for glossy effect
+                    roughness: 0.8, // Less roughness for glossy effect
                     envMapIntensity: 1.5
                 });
             }

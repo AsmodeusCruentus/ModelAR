@@ -6,16 +6,38 @@ function loadModel1() {
 
     // Camera
     const camera = new THREE.PerspectiveCamera(115, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.z = 650; // Start at the maximum zoom distance 
+    camera.position.set(0, 100, 650); // Adjusted position for better view
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.shadowMap.enabled = true; // Enable shadows
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Soft shadows
     container.appendChild(renderer.domElement);
+
+    // Ground Plane (For Shadows)
+    const groundGeometry = new THREE.PlaneGeometry(500, 500);
+    const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -10;
+    ground.receiveShadow = true;
+    scene.add(ground);
 
     // Light
     const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(100, 200, 100);
+    light.castShadow = true;
+    light.shadow.mapSize.width = 1024;
+    light.shadow.mapSize.height = 1024;
+    light.shadow.camera.near = 0.5;
+    light.shadow.camera.far = 500;
     scene.add(light);
+
+    // Load background texture for this specific model
+    const textureLoader = new THREE.TextureLoader();
+    const backgroundTexture = textureLoader.load('scenebackground.jpg'); // Load image
+    scene.background = backgroundTexture;
 
     // GLTFLoader 
     const loader = new THREE.GLTFLoader();
@@ -30,12 +52,17 @@ function loadModel1() {
         model.scale.set(0.8, 0.8, 0.8); // Scale it up a bit
         model.rotation.x = Math.PI / 2; // Rotate it 90 degrees around the x-axis
 
+        // Enable reflections & shadows
         model.traverse((child) => {
             if (child.isMesh) {
-                child.material = new THREE.MeshStandardMaterial({ 
-                    color: 0x222222, // dökk grár allegedly
-                    metalness: 0.9,
-                    roughness: 0.1
+                child.castShadow = true; // Enable casting shadows
+                child.receiveShadow = true; // Enable receiving shadows
+
+                child.material = new THREE.MeshStandardMaterial({
+                    color: 0x222222, // Dark gray
+                    metalness: 1, // Increased metalness for reflection
+                    roughness: 0.3, // Less roughness for glossy effect
+                    envMapIntensity: 1.5
                 });
             }
         });
@@ -45,11 +72,6 @@ function loadModel1() {
     }, undefined, function (error) {
         console.error(error);
     });
-
-    // Load background texture for this specific model
-    const textureLoader = new THREE.TextureLoader();
-    const backgroundTexture = textureLoader.load('scenebackground.jpg'); // Load image
-    scene.background = backgroundTexture;
 
     // OrbitControls
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
